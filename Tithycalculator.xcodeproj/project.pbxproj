@@ -1,0 +1,557 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXContainerItemProxy section */
+		05CBB7AE2DCC0F97000FEB72 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 05CBB7952DCC0F94000FEB72 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 05CBB79C2DCC0F95000FEB72;
+			remoteInfo = Tithycalculator;
+		};
+		05CBB7B82DCC0F97000FEB72 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 05CBB7952DCC0F94000FEB72 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 05CBB79C2DCC0F95000FEB72;
+			remoteInfo = Tithycalculator;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		05CBB79D2DCC0F95000FEB72 /* Tithycalculator.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tithycalculator.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		05CBB7AD2DCC0F97000FEB72 /* TithycalculatorTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TithycalculatorTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		05CBB7B72DCC0F97000FEB72 /* TithycalculatorUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TithycalculatorUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		05CBB79F2DCC0F95000FEB72 /* Tithycalculator */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Tithycalculator;
+			sourceTree = "<group>";
+		};
+		05CBB7B02DCC0F97000FEB72 /* TithycalculatorTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = TithycalculatorTests;
+			sourceTree = "<group>";
+		};
+		05CBB7BA2DCC0F97000FEB72 /* TithycalculatorUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = TithycalculatorUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		05CBB79A2DCC0F95000FEB72 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		05CBB7AA2DCC0F97000FEB72 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		05CBB7B42DCC0F97000FEB72 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		05CBB7942DCC0F94000FEB72 = {
+			isa = PBXGroup;
+			children = (
+				05CBB79F2DCC0F95000FEB72 /* Tithycalculator */,
+				05CBB7B02DCC0F97000FEB72 /* TithycalculatorTests */,
+				05CBB7BA2DCC0F97000FEB72 /* TithycalculatorUITests */,
+				05CBB79E2DCC0F95000FEB72 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		05CBB79E2DCC0F95000FEB72 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				05CBB79D2DCC0F95000FEB72 /* Tithycalculator.app */,
+				05CBB7AD2DCC0F97000FEB72 /* TithycalculatorTests.xctest */,
+				05CBB7B72DCC0F97000FEB72 /* TithycalculatorUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		05CBB79C2DCC0F95000FEB72 /* Tithycalculator */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 05CBB7C12DCC0F97000FEB72 /* Build configuration list for PBXNativeTarget "Tithycalculator" */;
+			buildPhases = (
+				05CBB7992DCC0F95000FEB72 /* Sources */,
+				05CBB79A2DCC0F95000FEB72 /* Frameworks */,
+				05CBB79B2DCC0F95000FEB72 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				05CBB79F2DCC0F95000FEB72 /* Tithycalculator */,
+			);
+			name = Tithycalculator;
+			packageProductDependencies = (
+			);
+			productName = Tithycalculator;
+			productReference = 05CBB79D2DCC0F95000FEB72 /* Tithycalculator.app */;
+			productType = "com.apple.product-type.application";
+		};
+		05CBB7AC2DCC0F97000FEB72 /* TithycalculatorTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 05CBB7C42DCC0F97000FEB72 /* Build configuration list for PBXNativeTarget "TithycalculatorTests" */;
+			buildPhases = (
+				05CBB7A92DCC0F97000FEB72 /* Sources */,
+				05CBB7AA2DCC0F97000FEB72 /* Frameworks */,
+				05CBB7AB2DCC0F97000FEB72 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				05CBB7AF2DCC0F97000FEB72 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				05CBB7B02DCC0F97000FEB72 /* TithycalculatorTests */,
+			);
+			name = TithycalculatorTests;
+			packageProductDependencies = (
+			);
+			productName = TithycalculatorTests;
+			productReference = 05CBB7AD2DCC0F97000FEB72 /* TithycalculatorTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		05CBB7B62DCC0F97000FEB72 /* TithycalculatorUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 05CBB7C72DCC0F97000FEB72 /* Build configuration list for PBXNativeTarget "TithycalculatorUITests" */;
+			buildPhases = (
+				05CBB7B32DCC0F97000FEB72 /* Sources */,
+				05CBB7B42DCC0F97000FEB72 /* Frameworks */,
+				05CBB7B52DCC0F97000FEB72 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				05CBB7B92DCC0F97000FEB72 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				05CBB7BA2DCC0F97000FEB72 /* TithycalculatorUITests */,
+			);
+			name = TithycalculatorUITests;
+			packageProductDependencies = (
+			);
+			productName = TithycalculatorUITests;
+			productReference = 05CBB7B72DCC0F97000FEB72 /* TithycalculatorUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		05CBB7952DCC0F94000FEB72 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1620;
+				LastUpgradeCheck = 1620;
+				TargetAttributes = {
+					05CBB79C2DCC0F95000FEB72 = {
+						CreatedOnToolsVersion = 16.2;
+					};
+					05CBB7AC2DCC0F97000FEB72 = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = 05CBB79C2DCC0F95000FEB72;
+					};
+					05CBB7B62DCC0F97000FEB72 = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = 05CBB79C2DCC0F95000FEB72;
+					};
+				};
+			};
+			buildConfigurationList = 05CBB7982DCC0F95000FEB72 /* Build configuration list for PBXProject "Tithycalculator" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 05CBB7942DCC0F94000FEB72;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 05CBB79E2DCC0F95000FEB72 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				05CBB79C2DCC0F95000FEB72 /* Tithycalculator */,
+				05CBB7AC2DCC0F97000FEB72 /* TithycalculatorTests */,
+				05CBB7B62DCC0F97000FEB72 /* TithycalculatorUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		05CBB79B2DCC0F95000FEB72 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		05CBB7AB2DCC0F97000FEB72 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		05CBB7B52DCC0F97000FEB72 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		05CBB7992DCC0F95000FEB72 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		05CBB7A92DCC0F97000FEB72 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		05CBB7B32DCC0F97000FEB72 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		05CBB7AF2DCC0F97000FEB72 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 05CBB79C2DCC0F95000FEB72 /* Tithycalculator */;
+			targetProxy = 05CBB7AE2DCC0F97000FEB72 /* PBXContainerItemProxy */;
+		};
+		05CBB7B92DCC0F97000FEB72 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 05CBB79C2DCC0F95000FEB72 /* Tithycalculator */;
+			targetProxy = 05CBB7B82DCC0F97000FEB72 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		05CBB7BF2DCC0F97000FEB72 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		05CBB7C02DCC0F97000FEB72 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		05CBB7C22DCC0F97000FEB72 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Tithycalculator/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = TitheCalculator.Tithycalculator;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		05CBB7C32DCC0F97000FEB72 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Tithycalculator/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = TitheCalculator.Tithycalculator;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		05CBB7C52DCC0F97000FEB72 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = TitheCalculator.TithycalculatorTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Tithycalculator.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Tithycalculator";
+			};
+			name = Debug;
+		};
+		05CBB7C62DCC0F97000FEB72 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = TitheCalculator.TithycalculatorTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Tithycalculator.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Tithycalculator";
+			};
+			name = Release;
+		};
+		05CBB7C82DCC0F97000FEB72 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = TitheCalculator.TithycalculatorUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Tithycalculator;
+			};
+			name = Debug;
+		};
+		05CBB7C92DCC0F97000FEB72 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = TitheCalculator.TithycalculatorUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Tithycalculator;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		05CBB7982DCC0F95000FEB72 /* Build configuration list for PBXProject "Tithycalculator" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				05CBB7BF2DCC0F97000FEB72 /* Debug */,
+				05CBB7C02DCC0F97000FEB72 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		05CBB7C12DCC0F97000FEB72 /* Build configuration list for PBXNativeTarget "Tithycalculator" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				05CBB7C22DCC0F97000FEB72 /* Debug */,
+				05CBB7C32DCC0F97000FEB72 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		05CBB7C42DCC0F97000FEB72 /* Build configuration list for PBXNativeTarget "TithycalculatorTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				05CBB7C52DCC0F97000FEB72 /* Debug */,
+				05CBB7C62DCC0F97000FEB72 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		05CBB7C72DCC0F97000FEB72 /* Build configuration list for PBXNativeTarget "TithycalculatorUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				05CBB7C82DCC0F97000FEB72 /* Debug */,
+				05CBB7C92DCC0F97000FEB72 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 05CBB7952DCC0F94000FEB72 /* Project object */;
+}
