@@ -1,0 +1,11 @@
+{
+  "": {
+    "swift-dependencies": "/Users/irvensdupuy/Desktop/Tithycalculator/GlobalTypes/.build/arm64-apple-macosx/debug/GlobalTypes.build/master.swiftdeps"
+  },
+  "/Users/irvensdupuy/Desktop/Tithycalculator/GlobalTypes/Sources/GlobalTypes/GlobalTypes.swift": {
+    "dependencies": "/Users/irvensdupuy/Desktop/Tithycalculator/GlobalTypes/.build/arm64-apple-macosx/debug/GlobalTypes.build/GlobalTypes.d",
+    "object": "/Users/irvensdupuy/Desktop/Tithycalculator/GlobalTypes/.build/arm64-apple-macosx/debug/GlobalTypes.build/GlobalTypes.swift.o",
+    "swiftmodule": "/Users/irvensdupuy/Desktop/Tithycalculator/GlobalTypes/.build/arm64-apple-macosx/debug/GlobalTypes.build/GlobalTypes~partial.swiftmodule",
+    "swift-dependencies": "/Users/irvensdupuy/Desktop/Tithycalculator/GlobalTypes/.build/arm64-apple-macosx/debug/GlobalTypes.build/GlobalTypes.swiftdeps"
+  }
+}
