@@ -73,7 +73,7 @@ struct GivingCategory: Identifiable, Equatable, Codable {
     
     static let defaultPresets: [GivingCategory] = [
         GivingCategory(
-            name: "Tithe",
+            name: "Tithiq",
             percentage: 10.0,
             color: .green,
             description: "Traditional 10% giving based on biblical principles."
@@ -1334,8 +1334,9 @@ struct ScreenshotView: View {
                 HStack {
                     Image(systemName: "heart.fill")
                         .foregroundColor(.green)
-                    Text("Giving Calculator")
-                        .font(.headline)
+                    Text("Tithiq")
+                        .font(.title2)
+                        .fontWeight(.bold)
                     Image(systemName: "heart.fill")
                         .foregroundColor(.green)
                 }
@@ -1536,7 +1537,7 @@ struct CalculatorView: View {
     // Extracted header view to simplify main body
     private var headerView: some View {
         HStack {
-            Text("Giving Calculator")
+            Text("Tithiq")
                 .font(.title2)
                 .fontWeight(.bold)
             
@@ -2036,6 +2037,37 @@ struct SettingsView: View {
                     .sheet(isPresented: $showingReminderSettings) {
                         ReminderSettingsView(reminderManager: reminderManager)
                     }
+                    
+                    // Tip Jar Section
+                    Button(action: {
+                        // Action for the tip jar button
+                        print("Tip Jar button tapped")
+                    }) {
+                        HStack {
+                            Image(systemName: "heart.fill")
+                                .foregroundColor(.pink)
+                                .font(.title3)
+
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Support Us with a Tip")
+                                    .font(.headline)
+
+                                Text("Help us improve by leaving a tip")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+
+                            Spacer()
+
+                            Image(systemName: "chevron.right")
+                                .foregroundColor(.gray)
+                                .font(.footnote)
+                        }
+                        .padding()
+                        .background(Color.gray.opacity(0.1))
+                        .cornerRadius(12)
+                    }
+                    .padding(.horizontal)
                     
                     // Actions section
                     VStack(spacing: 16) {
