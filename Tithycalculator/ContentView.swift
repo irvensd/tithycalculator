@@ -91,10 +91,6 @@ struct GivingCategory: Identifiable, Equatable, Codable {
             description: "Support for missionaries and outreach programs."
         )
     ]
-    
-    static var preset: [GivingCategory] {
-        return CategoryManager.shared.categories
-    }
 }
 
 // MARK: - CategoryManager
@@ -135,6 +131,28 @@ class CategoryManager: ObservableObject {
     
     func resetToDefaults() {
         categories = GivingCategory.defaultPresets
+        saveCategories()
+    }
+    
+    // Add new category
+    func addCategory(name: String, percentage: Double) {
+        let newCategory = GivingCategory(
+            name: name,
+            percentage: percentage,
+            color: .green, // Default color
+            description: "Custom giving category"
+        )
+        categories.append(newCategory)
+        saveCategories()
+    }
+    
+    // Delete category
+    func deleteCategory(_ category: GivingCategory) {
+        categories.removeAll { $0.id == category.id }
+        // If this was the last category, add a default one
+        if categories.isEmpty {
+            categories = [GivingCategory.defaultPresets[0]]
+        }
         saveCategories()
     }
 }
@@ -1433,12 +1451,19 @@ struct CalculatorView: View {
     @State private var showingHistory = false
     @State private var showingGoals = false
     @State private var showingScreenshot = false
-    @State private var showingTaxInfo = false // Add this line
+    @State private var showingTaxInfo = false
     @ObservedObject var historyManager: HistoryManager
     @ObservedObject var goalsManager: GoalsManager
     @ObservedObject var progressTracker: ProgressTracker
-    @State private var selectedCategories: [GivingCategory] = [GivingCategory.preset[0]] // Default to Tithe
+    @State private var selectedCategories: [GivingCategory] = [GivingCategory.defaultPresets[0]]
     @StateObject private var presetManager = PresetManager()
+    @StateObject private var categoryManager = CategoryManager.shared
+    @Environment(\.colorScheme) private var colorScheme
+    @State private var selectedPreset: GivingCategory?
+    @State private var lastUsedPercentage: Double = 0
+    @State private var lastUsedAmount: Double = 0
+    @State private var showingLastUsed: Bool = false
+    @State private var showingAddPreset = false
     
     private let frequencies = ["Weekly", "Bi-Weekly", "Monthly", "Annually"]
     
@@ -1456,14 +1481,10 @@ struct CalculatorView: View {
     
     private var monthlyIncome: Double {
         switch frequency {
-        case "Weekly":
-            return income * 4.33 // Average weeks in a month
-        case "Bi-Weekly":
-            return income * 2.17 // Average bi-weekly periods in a month
-        case "Annually":
-            return income / 12
-        default:
-            return income // Monthly is already monthly
+        case "Weekly": return income * 4.33
+        case "Bi-Weekly": return income * 2.17
+        case "Annually": return income / 12
+        default: return income
         }
     }
     
@@ -1473,25 +1494,335 @@ struct CalculatorView: View {
     
     private var annualGiving: Double {
         switch frequency {
-        case "Weekly":
-            return givingAmount * 52
-        case "Bi-Weekly":
-            return givingAmount * 26
-        case "Monthly":
-            return givingAmount * 12
-        default:
-            return givingAmount // Annual is already annual
+        case "Weekly": return givingAmount * 52
+        case "Bi-Weekly": return givingAmount * 26
+        case "Monthly": return givingAmount * 12
+        default: return givingAmount
         }
     }
     
-    private var monthlyGoalProgress: Double {
-        guard goalsManager.goals.monthlyTarget > 0 else { return 0 }
-        return min(monthlyGiving / goalsManager.goals.monthlyTarget, 1.0)
+    private var defaultCategory: GivingCategory {
+        GivingCategory.defaultPresets[0]
     }
     
-    private var yearlyGoalProgress: Double {
-        guard goalsManager.goals.yearlyTarget > 0 else { return 0 }
-        return min(annualGiving / goalsManager.goals.yearlyTarget, 1.0)
+    // Main results section with improved visual design
+    private var resultsSection: some View {
+        VStack(spacing: 20) {
+            // Main Giving Result Card
+            VStack(spacing: 16) {
+                Text("Total Giving")
+                    .font(.headline)
+                    .foregroundColor(.secondary)
+                
+                Text(String(format: "$%.2f", givingAmount))
+                    .font(.system(size: 48, weight: .bold))
+                    .foregroundColor(selectedCategories.first?.color ?? .green)
+                    .contentTransition(.numericText())
+                
+                Text("\(String(format: "%.1f", totalPercentage))% of \(frequency) Income")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 24)
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(colorScheme == .dark ? Color.black : Color.white)
+                    .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
+            )
+            
+            // Projections Card
+            VStack(spacing: 16) {
+                Text("Projections")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                
+                HStack(spacing: 20) {
+                    // Monthly Projection
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Monthly")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        
+                        Text(String(format: "$%.2f", monthlyGiving))
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .foregroundColor(.blue)
+                    }
+                    
+                    Divider()
+                    
+                    // Annual Projection
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Annually")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        
+                        Text(String(format: "$%.2f", annualGiving))
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .foregroundColor(.green)
+                    }
+                }
+            }
+            .padding()
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(colorScheme == .dark ? Color.black : Color.white)
+                    .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
+            )
+            
+            // Category Breakdown if multiple selected
+            if selectedCategories.count > 1 {
+                VStack(alignment: .leading, spacing: 16) {
+                    Text("Category Breakdown")
+                        .font(.headline)
+                    
+                    ForEach(selectedCategories) { category in
+                        HStack {
+                            Circle()
+                                .fill(category.color)
+                                .frame(width: 12, height: 12)
+                            
+                            Text(category.name)
+                                .font(.subheadline)
+                            
+                            Spacer()
+                            
+                            VStack(alignment: .trailing) {
+                                Text("\(String(format: "%.1f", category.percentage))%")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                
+                                Text(String(format: "$%.2f", income * (category.percentage / 100.0)))
+                                    .font(.subheadline)
+                                    .foregroundColor(category.color)
+                            }
+                        }
+                    }
+                }
+                .padding()
+                .background(
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(colorScheme == .dark ? Color.black : Color.white)
+                        .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
+                )
+            }
+        }
+        .padding(.horizontal)
+    }
+    
+    // Input section with improved visual design
+    private var inputSection: some View {
+        VStack(spacing: 20) {
+            // Income Input
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Enter Your Income")
+                    .font(.headline)
+                
+                HStack {
+                    Text("$")
+                        .foregroundColor(.secondary)
+                        .font(.title2)
+                    
+                    TextField("0.00", text: $incomeText)
+                        .font(.title2)
+                        .keyboardType(.decimalPad)
+                        .focused($isInputFocused)
+                }
+                .padding()
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(colorScheme == .dark ? Color.black : Color.white)
+                        .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
+                )
+            }
+            
+            // Frequency Selection
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Income Frequency")
+                    .font(.headline)
+                
+                Picker("Frequency", selection: $frequency) {
+                    ForEach(frequencies, id: \.self) {
+                        Text($0)
+                    }
+                }
+                .pickerStyle(SegmentedPickerStyle())
+            }
+        }
+        .padding(.horizontal)
+    }
+    
+    // Header View Component
+    private var headerView: some View {
+        HStack {
+            Text("Tithiq")
+                .font(.title)
+                .fontWeight(.bold)
+            
+            Spacer()
+            
+            HStack(spacing: 16) {
+                Button(action: { showingScreenshot = true }) {
+                    Image(systemName: "square.and.arrow.up")
+                        .font(.title3)
+                }
+                .disabled(income <= 0)
+                
+                Button(action: { showingGoals = true }) {
+                    Image(systemName: "target")
+                        .font(.title3)
+                }
+                
+                Button(action: { showingTaxInfo = true }) {
+                    Image(systemName: "doc.text.fill")
+                        .font(.title3)
+                }
+                
+                Button(action: { showingHistory = true }) {
+                    Image(systemName: "clock.arrow.circlepath")
+                        .font(.title3)
+                }
+            }
+        }
+        .padding(.horizontal)
+    }
+    
+    // Action Buttons Component
+    private var actionButtonsView: some View {
+        VStack(spacing: 12) {
+            Button(action: saveCalculation) {
+                HStack {
+                    Image(systemName: "square.and.arrow.down")
+                    Text("Save to History")
+                }
+                .font(.headline)
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(income > 0 ? (selectedCategories.first?.color ?? .green) : Color.gray)
+                .cornerRadius(12)
+            }
+            .disabled(income <= 0)
+            
+            Button(action: clearValues) {
+                HStack {
+                    Image(systemName: "arrow.counterclockwise")
+                    Text("Clear")
+                }
+                .font(.headline)
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.blue)
+                .cornerRadius(12)
+            }
+        }
+        .padding(.horizontal)
+        .padding(.top, 8)
+    }
+    
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 24) {
+                headerView
+                
+                // Quick Presets
+                QuickPresetsView(
+                    categoryManager: categoryManager,
+                    selectedPreset: $selectedPreset,
+                    showingPresetSheet: $showingGoals,
+                    showingAddPreset: $showingAddPreset,
+                    lastUsedPercentage: $lastUsedPercentage,
+                    lastUsedAmount: $lastUsedAmount,
+                    showingLastUsed: $showingLastUsed
+                )
+                .onChange(of: selectedPreset) { newPreset in
+                    if let preset = newPreset {
+                        selectedCategories = [preset]
+                    }
+                }
+                .onChange(of: categoryManager.categories) { newCategories in
+                    // If categories become empty, reset to default
+                    if newCategories.isEmpty {
+                        categoryManager.categories = [defaultCategory]
+                    }
+                    // If current selection is not in available categories, select first available
+                    if !selectedCategories.isEmpty && !newCategories.contains(where: { $0.id == selectedCategories[0].id }) {
+                        selectedCategories = [newCategories[0]]
+                    }
+                }
+                .onAppear {
+                    // Initialize last used values
+                    if let firstCategory = selectedCategories.first {
+                        lastUsedPercentage = firstCategory.percentage
+                        lastUsedAmount = givingAmount
+                        showingLastUsed = true
+                    }
+                }
+                
+                // Category Selection
+                MultiSelectionGivingView(
+                    categories: categoryManager.categories,
+                    selectedCategories: $selectedCategories
+                )
+                
+                // Input Section
+                inputSection
+                
+                // Results Section
+                resultsSection
+                
+                // Bible Verse
+                RotatingVersesView()
+                    .padding(.horizontal)
+                
+                actionButtonsView
+            }
+            .padding(.vertical)
+        }
+        .sheet(isPresented: $showingHistory) {
+            HistoryView(historyManager: historyManager)
+        }
+        .sheet(isPresented: $showingTaxInfo) {
+            TaxInformationView()
+        }
+        .sheet(isPresented: $showingGoals) {
+            GoalsView(goalsManager: goalsManager)
+        }
+        .sheet(isPresented: $showingScreenshot) {
+            ScreenshotView(
+                amount: String(format: "$%.2f", givingAmount),
+                percentage: String(format: "%.1f%%", totalPercentage),
+                income: String(format: "$%.2f", income),
+                frequency: frequency,
+                categories: selectedCategories.map { $0.name }.joined(separator: ", "),
+                date: Date(),
+                verse: BibleVerse.givingVerses.randomElement() ?? BibleVerse.givingVerses[0]
+            )
+        }
+        .sheet(isPresented: $showingAddPreset) {
+            AddPresetView(categoryManager: categoryManager)
+        }
+        .onTapGesture {
+            isInputFocused = false
+        }
+        .onChange(of: incomeText) { _ in
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                // Trigger animation of dependent values
+            }
+        }
+        .onChange(of: selectedCategories) { _ in
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                // Trigger animation of dependent values
+            }
+        }
+        .onChange(of: frequency) { _ in
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                // Trigger animation of dependent values
+            }
+        }
     }
     
     private func clearValues() {
@@ -1512,10 +1843,8 @@ struct CalculatorView: View {
                     givingAmount: givingAmount
                 )
                 
-                // Add to progress tracker if saving
                 progressTracker.addContribution(amount: givingAmount)
                 
-                // Save as last giving preset
                 let categoryDistribution = Dictionary(uniqueKeysWithValues:
                     selectedCategories.map { ($0.name, $0.percentage / totalPercentage * 100.0) }
                 )
@@ -1527,296 +1856,10 @@ struct CalculatorView: View {
                 )
             }
             
-            // Provide haptic feedback
             #if canImport(UIKit)
             let impactMed = UIImpactFeedbackGenerator(style: .medium)
             impactMed.impactOccurred()
             #endif
-        }
-    }
-    
-    // Extracted header view to simplify main body
-    private var headerView: some View {
-        HStack {
-            Text("Tithiq")
-                .font(.title2)
-                .fontWeight(.bold)
-            
-            Spacer()
-            
-            HStack(spacing: 16) {
-                Button(action: {
-                    showingScreenshot = true
-                }) {
-                    Image(systemName: "square.and.arrow.up")
-                        .font(.title2)
-                }
-                .disabled(income <= 0)
-                
-                Button(action: {
-                    showingGoals = true
-                }) {
-                    Image(systemName: "target")
-                        .font(.title2)
-                }
-                
-                Button(action: {
-                    showingTaxInfo = true
-                }) {
-                    Image(systemName: "doc.text.fill")
-                        .font(.title2)
-                }
-                
-                Button(action: {
-                    showingHistory = true
-                }) {
-                    Image(systemName: "clock.arrow.circlepath")
-                        .font(.title2)
-                }
-            }
-        }
-        .padding(.horizontal)
-        .padding(.top)
-    }
-    
-    // Extracted keyboard done button to simplify main body
-    private var keyboardDoneButton: some View {
-        Group {
-            if isInputFocused {
-                HStack {
-                    Spacer()
-                    Button("Done") {
-                        isInputFocused = false
-                    }
-                    .padding()
-                }
-                .background(Color.secondary.opacity(0.1))
-                .transition(.move(edge: .bottom))
-            }
-        }
-    }
-    
-    // Main results section
-    private var resultsSection: some View {
-        VStack(spacing: 16) {
-            // Giving Result
-            ResultView(
-                title: "Total Giving (\(String(format: "%.1f", totalPercentage))%)",
-                value: String(format: "$%.2f", givingAmount),
-                subtitle: "per \(frequency.lowercased()) income",
-                color: selectedCategories.first?.color ?? .green
-            )
-            
-            // Monthly and Annual Projection
-            VStack(spacing: 16) {
-                // Monthly Projection with Goal
-                VStack(spacing: 8) {
-                    HStack {
-                        Text("Monthly")
-                            .font(.headline)
-                        
-                        Spacer()
-                        
-                        Text("$\(monthlyGiving, specifier: "%.2f")")
-                            .font(.headline)
-                    }
-                    
-                    if goalsManager.goals.monthlyTarget > 0 {
-                        VStack(alignment: .leading, spacing: 4) {
-                            HStack {
-                                Text("Goal: $\(goalsManager.goals.monthlyTarget, specifier: "%.2f")")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                
-                                Spacer()
-                                
-                                Text("\(Int(monthlyGoalProgress * 100))%")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                            
-                            ProgressBar(value: monthlyGoalProgress, color: .blue)
-                                .frame(height: 8)
-                        }
-                    }
-                }
-                .padding()
-                .background(Color.gray.opacity(0.2))
-                .cornerRadius(12)
-                
-                // Yearly Projection with Goal
-                VStack(spacing: 8) {
-                    HStack {
-                        Text("Yearly")
-                            .font(.headline)
-                        
-                        Spacer()
-                        
-                        Text("$\(annualGiving, specifier: "%.2f")")
-                            .font(.headline)
-                    }
-                    
-                    if goalsManager.goals.yearlyTarget > 0 {
-                        VStack(alignment: .leading, spacing: 4) {
-                            HStack {
-                                Text("Goal: $\(goalsManager.goals.yearlyTarget, specifier: "%.2f")")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                
-                                Spacer()
-                                
-                                Text("\(Int(yearlyGoalProgress * 100))%")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                            
-                            ProgressBar(value: yearlyGoalProgress, color: .green)
-                                .frame(height: 8)
-                        }
-                    }
-                }
-                .padding()
-                .background(Color.gray.opacity(0.2))
-                .cornerRadius(12)
-            }
-            .padding(.horizontal)
-            
-            // Bible Verse
-            RotatingVersesView()
-                .padding(.horizontal)
-            
-            // Category Breakdown if multiple selected
-            if selectedCategories.count > 1 {
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("Category Breakdown")
-                        .font(.headline)
-                        .padding(.bottom, 4)
-                    
-                    ForEach(selectedCategories) { category in
-                        HStack {
-                            Circle()
-                                .fill(category.color)
-                                .frame(width: 12, height: 12)
-                            
-                            Text(category.name)
-                                .font(.subheadline)
-                            
-                            Spacer()
-                            
-                            VStack(alignment: .trailing) {
-                                Text("\(String(format: "%.1f", category.percentage))%")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                
-                                Text("$\(income * (category.percentage / 100.0), specifier: "%.2f")")
-                                    .font(.subheadline)
-                                    .foregroundColor(category.color)
-                            }
-                        }
-                    }
-                }
-                .padding()
-                .background(Color.gray.opacity(0.2))
-                .cornerRadius(12)
-                .padding(.horizontal)
-            }
-        }
-    }
-    
-    var body: some View {
-        VStack {
-            // Header
-            headerView
-            
-            // Main content
-            ScrollView {
-                VStack(spacing: 24) {
-                    // Quick Presets Section (new)
-                    QuickPresetsView(
-                        presetManager: presetManager,
-                        incomeText: $incomeText,
-                        frequency: $frequency,
-                        selectedCategories: $selectedCategories
-                    )
-                    
-                    // Category Selection
-                    MultiSelectionGivingView(
-                        categories: GivingCategory.preset,
-                        selectedCategories: $selectedCategories
-                    )
-                    
-                    // Income Input
-                    IncomeInputView(
-                        incomeText: $incomeText,
-                        isInputFocused: _isInputFocused
-                    )
-                    
-                    // Frequency Selection
-                    FrequencySelectionView(
-                        frequency: $frequency,
-                        frequencies: frequencies
-                    )
-                    
-                    // Results
-                    resultsSection
-                    
-                    // Action Buttons
-                    ActionButtonsView(
-                        income: income,
-                        saveAction: saveCalculation,
-                        clearAction: clearValues,
-                        color: selectedCategories.first?.color ?? .green
-                    )
-                    
-                    Spacer()
-                }
-                .padding(.top)
-            }
-            .sheet(isPresented: $showingHistory) {
-                HistoryView(historyManager: historyManager)
-            }
-            .sheet(isPresented: $showingTaxInfo) {
-                TaxInformationView()
-            }
-            .sheet(isPresented: $showingGoals) {
-                GoalsView(goalsManager: goalsManager)
-            }
-            .sheet(isPresented: $showingScreenshot) {
-                ScreenshotView(
-                    amount: String(format: "$%.2f", givingAmount),
-                    percentage: String(format: "%.1f%%", totalPercentage),
-                    income: String(format: "$%.2f", income),
-                    frequency: frequency,
-                    categories: selectedCategories.map { $0.name }.joined(separator: ", "),
-                    date: Date(),
-                    verse: BibleVerse.givingVerses.randomElement() ?? BibleVerse.givingVerses[0]
-                )
-            }
-            .sheet(isPresented: $showingTaxInfo) {
-                TaxInformationView()
-            }
-            
-            // Keyboard done button
-            keyboardDoneButton
-        }
-        .onTapGesture {
-            isInputFocused = false
-        }
-        // Add animation when income or category changes
-        .onChange(of: incomeText) { _ in
-            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                // This triggers animation of dependent values
-            }
-        }
-        .onChange(of: selectedCategories) { _ in
-            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                // This triggers animation of dependent values when category changes
-            }
-        }
-        .onChange(of: frequency) { _ in
-            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                // This triggers animation of dependent values when frequency changes
-            }
         }
     }
 }
@@ -2320,6 +2363,7 @@ struct MonthlyGivingView: View {
                         }
                     }
                     .padding(.horizontal)
+                    
                     
                     // Monthly total
                     HStack(spacing: 16) {
@@ -2918,140 +2962,144 @@ struct PresetView: View {
 
 // MARK: - QuickPresetsView
 struct QuickPresetsView: View {
-    @ObservedObject var presetManager: PresetManager
-    @Binding var incomeText: String
-    @Binding var frequency: String
-    @Binding var selectedCategories: [GivingCategory]
-    @State private var showingAddPreset = false
+    @ObservedObject var categoryManager: CategoryManager
+    @Binding var selectedPreset: GivingCategory?
+    @Binding var showingPresetSheet: Bool
+    @Binding var showingAddPreset: Bool
+    @Binding var lastUsedPercentage: Double
+    @Binding var lastUsedAmount: Double
+    @Binding var showingLastUsed: Bool
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text("Quick Presets")
-                    .font(.headline)
-                
-                Spacer()
-                
-                Button(action: {
-                    showingAddPreset = true
-                }) {
-                    Image(systemName: "plus.circle")
-                        .foregroundColor(.blue)
-                }
-            }
-            
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 12) {
-                    // Last time preset (if available)
-                    if let lastGiving = presetManager.lastGiving {
-                        PresetView(preset: lastGiving) {
-                            applyPreset(lastGiving)
-                        }
-                        .frame(width: 200)
-                        .overlay(
-                            Image(systemName: "clock.arrow.circlepath")
-                                .font(.caption)
-                                .foregroundColor(.blue)
-                                .padding(6)
-                                .background(Circle().fill(Color.white))
-                                .shadow(radius: 1)
-                                .offset(x: -6, y: -6),
-                            alignment: .topTrailing
-                        )
-                    }
+        VStack(alignment: .leading, spacing: 16) {
+            // Last Used Section
+            if showingLastUsed {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Last Used")
+                        .font(.headline)
+                        .foregroundColor(.primary)
                     
-                    // Saved presets
-                    ForEach(presetManager.presets) { preset in
-                        PresetView(preset: preset) {
-                            applyPreset(preset)
+                    HStack {
+                        VStack(alignment: .leading) {
+                            Text("Amount: $\(String(format: "%.2f", lastUsedAmount))")
+                                .font(.subheadline)
+                            Text("Percentage: \(String(format: "%.1f", lastUsedPercentage))%")
+                                .font(.subheadline)
                         }
-                        .frame(width: 200)
+                        
+                        Spacer()
+                        
+                        Button(action: {
+                            selectedPreset = GivingCategory(
+                                name: "Last Used",
+                                percentage: lastUsedPercentage,
+                                color: .blue,
+                                description: "Last used calculation"
+                            )
+                            showingPresetSheet = false
+                        }) {
+                            Text("Use")
+                                .font(.subheadline)
+                                .foregroundColor(.blue)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 6)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(Color.blue, lineWidth: 1)
+                                )
+                        }
+                    }
+                    .padding()
+                    .background(
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(Color(.systemBackground))
+                            .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
+                    )
+                }
+            }
+            
+            // Saved Presets Section
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Text("Saved Presets")
+                        .font(.headline)
+                        .foregroundColor(.primary)
+                    
+                    Spacer()
+                    
+                    Button(action: { showingAddPreset = true }) {
+                        Image(systemName: "plus.circle.fill")
+                            .foregroundColor(.blue)
+                            .font(.title2)
                     }
                 }
-                .padding(.horizontal)
-            }
-        }
-        .padding(.horizontal)
-        .sheet(isPresented: $showingAddPreset) {
-            // Simple form to add a new preset
-            AddPresetView(presetManager: presetManager)
-        }
-    }
-    
-    private func applyPreset(_ preset: GivingPreset) {
-        // Apply the preset to the calculator
-        incomeText = String(format: "%.2f", preset.amount)
-        frequency = preset.frequency
-        
-        // Apply category distribution if available
-        if !preset.categoryDistribution.isEmpty {
-            // Find matching categories
-            var newCategories: [GivingCategory] = []
-            
-            for (categoryName, _) in preset.categoryDistribution {
-                if let matchedCategory = GivingCategory.preset.first(where: { $0.name == categoryName }) {
-                    newCategories.append(matchedCategory)
+                
+                if categoryManager.categories.isEmpty {
+                    Text("No saved presets")
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                        .padding(.vertical, 8)
+                } else {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 12) {
+                            ForEach(categoryManager.categories) { category in
+                                PresetCard(category: category, onDelete: {
+                                    categoryManager.deleteCategory(category)
+                                })
+                                .frame(width: 200)
+                            }
+                        }
+                        .padding(.horizontal, 4)
+                    }
                 }
             }
-            
-            // Update selected categories
-            if !newCategories.isEmpty {
-                selectedCategories = newCategories
-            }
+        }
+        .padding()
+        .sheet(isPresented: $showingAddPreset) {
+            AddPresetView(categoryManager: categoryManager)
         }
     }
 }
 
 // MARK: - AddPresetView
 struct AddPresetView: View {
-    @ObservedObject var presetManager: PresetManager
+    @ObservedObject var categoryManager: CategoryManager
     @Environment(\.dismiss) private var dismiss
-    
     @State private var presetName = ""
-    @State private var amountText = ""
-    @State private var selectedFrequency = "Monthly"
-    @State private var organizationName = ""
-    @State private var includeOrganization = false
+    @State private var percentageText = ""
+    @State private var selectedColor: Color = .green
+    @State private var description = ""
     
-    private let frequencies = ["Weekly", "Bi-Weekly", "Monthly", "Annually"]
+    private let availableColors: [Color] = [.green, .blue, .orange, .purple, .red]
     
     var body: some View {
         NavigationView {
             Form {
                 Section(header: Text("Preset Details")) {
-                    TextField("Name (e.g. Monthly Tithe)", text: $presetName)
+                    TextField("Name", text: $presetName)
                     
+                    TextField("Percentage", text: $percentageText)
+                        .keyboardType(.decimalPad)
+                    
+                    TextField("Description", text: $description)
+                }
+                
+                Section(header: Text("Color")) {
                     HStack {
-                        Text("$")
-                        #if os(iOS)
-                        TextField("Amount", text: $amountText)
-                            .keyboardType(.decimalPad)
-                        #else
-                        TextField("Amount", text: $amountText)
-                        #endif
-                    }
-                    
-                    Picker("Frequency", selection: $selectedFrequency) {
-                        ForEach(frequencies, id: \.self) {
-                            Text($0)
+                        ForEach(availableColors, id: \.self) { color in
+                            Circle()
+                                .fill(color)
+                                .frame(width: 30, height: 30)
+                                .overlay(
+                                    Circle()
+                                        .stroke(Color.primary, lineWidth: selectedColor == color ? 2 : 0)
+                                )
+                                .onTapGesture {
+                                    selectedColor = color
+                                }
                         }
                     }
-                    .pickerStyle(SegmentedPickerStyle())
-                }
-                
-                Section(header: Text("Organization")) {
-                    Toggle("Include Organization", isOn: $includeOrganization)
-                    
-                    if includeOrganization {
-                        TextField("Organization Name", text: $organizationName)
-                    }
-                }
-                
-                Section {
-                    Button("Save Preset") {
-                        savePreset()
-                    }
-                    .disabled(presetName.isEmpty || amountText.isEmpty)
+                    .padding(.vertical, 8)
                 }
             }
             .navigationTitle("Add Preset")
@@ -3061,22 +3109,25 @@ struct AddPresetView: View {
                         dismiss()
                     }
                 }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        if let percentage = Double(percentageText),
+                           !presetName.isEmpty {
+                            let newCategory = GivingCategory(
+                                name: presetName,
+                                percentage: percentage,
+                                color: selectedColor,
+                                description: description.isEmpty ? "Custom giving category" : description
+                            )
+                            categoryManager.categories.append(newCategory)
+                            categoryManager.saveCategories()
+                            dismiss()
+                        }
+                    }
+                    .disabled(presetName.isEmpty || percentageText.isEmpty)
+                }
             }
         }
-    }
-    
-    private func savePreset() {
-        guard let amount = Double(amountText), amount > 0 else { return }
-        
-        let newPreset = GivingPreset(
-            name: presetName,
-            amount: amount,
-            frequency: selectedFrequency,
-            organizationName: includeOrganization ? organizationName : nil
-        )
-        
-        presetManager.addPreset(newPreset)
-        dismiss()
     }
 }
 
@@ -4077,15 +4128,43 @@ struct ReminderSettingsView: View {
 class ThemeManager: ObservableObject {
     static let shared = ThemeManager()
     
-    @Published var isDarkMode: Bool = false
-    @Published var isHapticEnabled: Bool = true
+    @Published var isDarkMode: Bool {
+        didSet {
+            UserDefaults.standard.set(isDarkMode, forKey: "isDarkMode")
+            #if os(iOS)
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+                windowScene.windows.forEach { window in
+                    window.overrideUserInterfaceStyle = isDarkMode ? .dark : .light
+                }
+            }
+            #endif
+        }
+    }
+    
+    @Published var isHapticEnabled: Bool {
+        didSet {
+            UserDefaults.standard.set(isHapticEnabled, forKey: "isHapticEnabled")
+        }
+    }
+    
     @Published var accentColor: Color = .blue
     
     private init() {
-        // Initialize with system settings
-        #if os(iOS)
-        isDarkMode = UITraitCollection.current.userInterfaceStyle == .dark
-        #endif
+        // Load saved preferences or use system settings
+        self.isDarkMode = UserDefaults.standard.bool(forKey: "isDarkMode")
+        self.isHapticEnabled = UserDefaults.standard.bool(forKey: "isHapticEnabled")
+        
+        // If no saved preference, use system settings
+        if UserDefaults.standard.object(forKey: "isDarkMode") == nil {
+            #if os(iOS)
+            isDarkMode = UITraitCollection.current.userInterfaceStyle == .dark
+            #endif
+        }
+        
+        // If no saved preference for haptic, default to true
+        if UserDefaults.standard.object(forKey: "isHapticEnabled") == nil {
+            isHapticEnabled = true
+        }
     }
     
     func toggleTheme() {
@@ -4149,3 +4228,189 @@ struct TaxInformationView: View {
         }
     }
 }
+
+struct PresetCard: View {
+    let category: GivingCategory
+    let onDelete: () -> Void
+    @Environment(\.colorScheme) var colorScheme
+    
+    var body: some View {
+        HStack {
+            // Category color indicator
+            RoundedRectangle(cornerRadius: 4)
+                .fill(category.color)
+                .frame(width: 4, height: 40)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(category.name)
+                    .font(.headline)
+                    .foregroundColor(.primary)
+                
+                Text(category.description)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .lineLimit(1)
+                
+                Text("\(String(format: "%.1f", category.percentage))%")
+                    .font(.subheadline)
+                    .foregroundColor(category.color)
+                    .padding(.top, 2)
+            }
+            
+            Spacer()
+            
+            Button(action: onDelete) {
+                Image(systemName: "trash")
+                    .foregroundColor(.red)
+                    .padding(8)
+                    .background(
+                        Circle()
+                            .fill(Color.red.opacity(0.1))
+                    )
+            }
+        }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(colorScheme == .dark ? Color.gray.opacity(0.2) : .white)
+                .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
+        )
+    }
+}
+
+struct PresetsSection: View {
+    @ObservedObject var categoryManager: CategoryManager
+    @State private var showingAddPreset = false
+    @State private var newPresetName = ""
+    @State private var newPresetPercentage = ""
+    @State private var showingDeleteAlert = false
+    @State private var presetToDelete: GivingCategory?
+    @State private var selectedColor: Color = .green
+    
+    private let availableColors: [Color] = [.green, .blue, .orange, .purple, .red]
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            // Header
+            HStack {
+                Text("Giving Categories")
+                    .font(.headline)
+                    .foregroundColor(.primary)
+                
+                Spacer()
+                
+                Button(action: { showingAddPreset = true }) {
+                    Image(systemName: "plus.circle.fill")
+                        .foregroundColor(.blue)
+                        .font(.title2)
+                }
+            }
+            .padding(.horizontal)
+            
+            if categoryManager.categories.isEmpty {
+                VStack(spacing: 12) {
+                    Image(systemName: "tray")
+                        .font(.system(size: 40))
+                        .foregroundColor(.gray)
+                    
+                    Text("No Categories")
+                        .font(.headline)
+                        .foregroundColor(.gray)
+                    
+                    Text("Add your first giving category to get started")
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                        .multilineTextAlignment(.center)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 30)
+            } else {
+                ScrollView {
+                    LazyVStack(spacing: 12) {
+                        ForEach(categoryManager.categories) { category in
+                            PresetCard(category: category, onDelete: {
+                                presetToDelete = category
+                                showingDeleteAlert = true
+                            })
+                        }
+                    }
+                    .padding(.horizontal)
+                }
+            }
+        }
+        .sheet(isPresented: $showingAddPreset) {
+            NavigationView {
+                Form {
+                    Section(header: Text("Category Details")) {
+                        TextField("Name", text: $newPresetName)
+                            .textContentType(.name)
+                        
+                        TextField("Percentage", text: $newPresetPercentage)
+                            .keyboardType(.decimalPad)
+                    }
+                    
+                    Section(header: Text("Category Color")) {
+                        HStack {
+                            ForEach(availableColors, id: \.self) { color in
+                                Circle()
+                                    .fill(color)
+                                    .frame(width: 30, height: 30)
+                                    .overlay(
+                                        Circle()
+                                            .stroke(Color.primary, lineWidth: selectedColor == color ? 2 : 0)
+                                    )
+                                    .onTapGesture {
+                                        selectedColor = color
+                                    }
+                            }
+                        }
+                        .padding(.vertical, 8)
+                    }
+                }
+                .navigationTitle("New Category")
+                #if os(iOS)
+                .navigationBarTitleDisplayMode(.inline)
+                #endif
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Cancel") {
+                            showingAddPreset = false
+                        }
+                    }
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("Save") {
+                            if let percentage = Double(newPresetPercentage),
+                               !newPresetName.isEmpty {
+                                let newCategory = GivingCategory(
+                                    name: newPresetName,
+                                    percentage: percentage,
+                                    color: selectedColor,
+                                    description: "Custom giving category"
+                                )
+                                categoryManager.categories.append(newCategory)
+                                categoryManager.saveCategories()
+                                newPresetName = ""
+                                newPresetPercentage = ""
+                                showingAddPreset = false
+                            }
+                        }
+                        .disabled(newPresetName.isEmpty || newPresetPercentage.isEmpty)
+                    }
+                }
+            }
+        }
+        .alert(isPresented: $showingDeleteAlert) {
+            Alert(
+                title: Text("Delete Category"),
+                message: Text("Are you sure you want to delete '\(presetToDelete?.name ?? "")'?"),
+                primaryButton: .destructive(Text("Delete")) {
+                    if let category = presetToDelete {
+                        categoryManager.deleteCategory(category)
+                    }
+                },
+                secondaryButton: .cancel()
+            )
+        }
+    }
+}
+
